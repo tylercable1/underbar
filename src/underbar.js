@@ -107,6 +107,13 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
+    var noDupes = [];
+    _.each(array, function(ele) {
+    	if (noDupes.indexOf(ele) === -1) {
+    		noDupes.push(ele);
+    	}
+    });
+    return noDupes;
   };
 
 
@@ -115,6 +122,12 @@
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
+   var results = [];
+   _.each(collection, function(ele) {
+     results.push(iterator(ele));
+    });
+   return results;
+   
   };
 
   /*
@@ -123,7 +136,7 @@
    * as an example of this.
    */
 
-  // Takes an array of objects and returns and array of the values of
+  // Takes an array of objects and returns an array of the values of
   // a certain property in it. E.g. take an array of people and return
   // an array of just their ages
   _.pluck = function(collection, key) {
@@ -156,7 +169,25 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-  };
+    if (arguments.length < 3) {
+      accumulator = collection[0];
+      for (var i = 1; i < collection.length; i++) {
+        accumulator = iterator(accumulator, collection[i], i, collection)
+      }
+      return accumulator;
+    }
+    if (Array.isArray(collection) === false) {
+      for (var k in collection) {
+        accumulator = iterator(accumulator, collection[k], k, collection)
+      }
+      return accumulator;
+    }
+
+    for (var i = 0; i < collection.length; i++) {
+      accumulator = iterator(accumulator, collection[i], i, collection);
+    }
+    return accumulator;
+  };  	
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
